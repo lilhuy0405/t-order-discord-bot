@@ -1,6 +1,8 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import Excel = require('exceljs');
 import { RequestInfo, RequestInit } from 'node-fetch';
+const queryString = require('node:querystring');
+
 const fetch = (url: RequestInfo, init?: RequestInit) =>
     import('node-fetch').then(({ default: fetch }) => fetch(url, init));
 
@@ -13,18 +15,32 @@ const getShipCode = async (interaction: any) => {
     try {
         const apiURL = 'https://torder-api.click/orders/';
         const phone = interaction.options.getString('phone');
-        if(!phone) throw new Error('Vui lòng nhập số điện thoại');
+        if (!phone) throw new Error('Vui lòng nhập số điện thoại');
         if (!isVietnamesePhoneNumber(phone)) throw new Error('Số điện thoại không hợp lệ');
         const resp = await fetch(apiURL + phone);
         if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
         const data = await resp.json();
         const listOrders = data.data;
-        if (!listOrders.length) throw new Error('Không tìm thấy mvd nào !. Mua gì đi rồi chúng ta nói chuyện tiếp');
+        if (!listOrders.length) {
+            await interaction.reply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
+            return;
+        }
         let listOrderMsg = listOrders.map((order: any, index: number) => {
             return `${index + 1}. MVD: ${order.shipCode} | Tên người nhận: ${order.customerName} | Hàng: ${order.product}`
 
         }).join('\n');
-        listOrderMsg += `\n\nTổng cộng: ${listOrders.length} mvd. Tra cứu vận đơn tại: https://jtexpress.vn/vi/tracking?type=track`;
+
+        const orderShipCodeQuery = listOrders.map((order: any) => {
+            return order.shipCode;
+        }).join(',');
+
+        const searchString = queryString.stringify({
+            type: 'track',
+            billcode: orderShipCodeQuery
+        })
+        
+
+        listOrderMsg += `\n\nTổng cộng: ${listOrders.length} mvd. Tra cứu vận đơn tại: https://jtexpress.vn/vi/tracking?${searchString}`;
 
         const responseEmbeded = {
             color: 0x0099ff,

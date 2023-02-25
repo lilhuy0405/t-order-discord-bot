@@ -26,6 +26,7 @@
     "jsdom": "^21.1.0",
     "moment": "^2.29.4",
     "node-fetch": "^2.6.6",
-    "os-utils": "^0.0.14"
+    "os-utils": "^0.0.14",
+    "query-string": "^8.1.0"
   }
 }
