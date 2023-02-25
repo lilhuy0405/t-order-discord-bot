@@ -4,59 +4,43 @@ import { RequestInfo, RequestInit } from 'node-fetch';
 const fetch = (url: RequestInfo, init?: RequestInit) =>
     import('node-fetch').then(({ default: fetch }) => fetch(url, init));
 
+
+function isVietnamesePhoneNumber(number) {
+    return /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(number);
+}
+
 const getShipCode = async (interaction: any) => {
     try {
         const apiURL = 'https://torder-api.click/orders/';
         const phone = interaction.options.getString('phone');
+        if(!phone) throw new Error('Vui lòng nhập số điện thoại');
+        if (!isVietnamesePhoneNumber(phone)) throw new Error('Số điện thoại không hợp lệ');
         const resp = await fetch(apiURL + phone);
         if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
         const data = await resp.json();
         const listOrders = data.data;
-        if (!listOrders.length) throw new Error('Không tìm thấy đơn hàng nào với số điện thoại: ' + phone );
+        if (!listOrders.length) throw new Error('Không tìm thấy mvd nào !. Mua gì đi rồi chúng ta nói chuyện tiếp');
+        let listOrderMsg = listOrders.map((order: any, index: number) => {
+            return `${index + 1}. MVD: ${order.shipCode} | Tên người nhận: ${order.customerName} | Hàng: ${order.product}`
+
+        }).join('\n');
+        listOrderMsg += `\n\nTổng cộng: ${listOrders.length} mvd. Tra cứu vận đơn tại: https://jtexpress.vn/vi/tracking?type=track`;
+
         const responseEmbeded = {
             color: 0x0099ff,
-            title: 'Danh sách đơn hàng',
-            description: 'Danh sách đơn hàng của ' + phone,
-            fields: [
-                {
-                    name: 'MVD',
-                    value: listOrders[0].shipCode,
-                    inline: true,
-                },
-                {
-                    name: 'người nhận',
-                    value: listOrders[0].customerName,
-                    inline: true,
-                },
-                {
-                    name: 'hàng',
-                    value: listOrders[0].product,
-                    inline: true,
-                },
-            ],
-        };
-        for (let i = 1; i < listOrders.length; i++) {
-            const order = listOrders[i];
-            const rows = [
-                {
-                    name: '',
-                    value: order.shipCode,
-                    inline: true,
-                },
-                {
-                    name: '',
-                    value: order.customerName,
-                    inline: true,
-                },
-                {
-                    name: '',
-                    value: order.product,
-                    inline: true,
-                }
-            ]
-            responseEmbeded.fields.push(...rows);
-        }
+            title: 'Danh sách mvd của ' + listOrders[0].customerName,
+            author: {
+                name: '65% bot',
+                icon_url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg',
+            },
 
+            description: listOrderMsg,
+            footer: {
+                text: 'Bot created by lilhuy',
+                icon_url: 'https://res.cloudinary.com/dfpf4gsti/image/upload/v1677298052/me_h2dzlt.jpg',
+            },
+
+        };
         await interaction.reply({ embeds: [responseEmbeded] });
 
 
