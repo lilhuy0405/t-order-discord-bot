@@ -1,13 +1,10 @@
 import Excel = require('exceljs');
+import NewsCrawler from './services/NewsCrawler';
 const main = async () => {
-    const workbook = new Excel.Workbook();
-    await workbook.xlsx.readFile('./data.xlsx')
-    const worksheet = workbook.getWorksheet(1);
-    const listShipCode = [];
-    worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
-        console.log(rowNumber, row.getCell('E').value);
+    const crawler = new NewsCrawler();
+    const latestNews = await crawler.getLatestNews();
+    console.log(latestNews);
     
-    });
 }
 
 main().then()

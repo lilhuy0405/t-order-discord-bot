@@ -1,8 +1,7 @@
 import {RequestInfo, RequestInit} from 'node-fetch';
-
+import * as os from "os-utils";
 const fetch = (url: RequestInfo, init?: RequestInit) =>
   import('node-fetch').then(({default: fetch}) => fetch(url, init));
-import * as os from "os-utils";
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
