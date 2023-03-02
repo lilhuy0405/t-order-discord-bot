@@ -12,7 +12,6 @@ module.exports = {
             const expression = interaction.options.getString('expression');
             if (!expression) throw new Error('Please enter an expression');
             const res = eval(expression);
-
             await interaction.reply(`Em Huy quick math: ${expression} = ${res}`);
         } catch (e) {
             console.log(e);

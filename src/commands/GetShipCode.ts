@@ -16,7 +16,7 @@ const getShipCode = async (interaction: any) => {
         const apiURL = 'https://torder-api.click/orders/';
         const phone = interaction.options.getString('phone');
         if (!phone) throw new Error('Vui lòng nhập số điện thoại');
-        if (!isVietnamesePhoneNumber(phone)) throw new Error('Số điện thoại không hợp lệ');
+        // if (!isVietnamesePhoneNumber(phone)) throw new Error('Số điện thoại không hợp lệ');
         const resp = await fetch(apiURL + phone);
         if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
         const data = await resp.json();
