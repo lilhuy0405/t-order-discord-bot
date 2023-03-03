@@ -19,7 +19,7 @@ const getTrackingStatus = async (shipCode: string) => {
         billcode: shipCode
     })
     try {
-        const url = 'https://jtexpress.vn/vi/tracking?type=track&billcode=841189925424';
+        const url = 'https://jtexpress.vn/vi/tracking?type=track&billcode=' + shipCode;';
         const websiteHtml = await getWebsiteContent(url);
 
 
