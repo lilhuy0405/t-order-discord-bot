@@ -3,6 +3,7 @@ import Excel = require('exceljs');
 import { RequestInfo, RequestInit } from 'node-fetch';
 import { getWebsiteContent } from '../util';
 import { JSDOM } from 'jsdom';
+import { sleep } from '../util/index';
 const queryString = require('node:querystring');
 const { Pagination } = require('pagination.djs');
 
@@ -88,8 +89,11 @@ const getPaginateButton = (page: number, maxPage: number) => {
     return row;
 }
 
+
+
 const getShipCode = async (interaction: any) => {
     try {
+        await interaction.deferReply();
         const apiURL = 'https://torder-api.click/orders/';
         const phone = interaction.options.getString('phone');
         if (!phone) throw new Error('Vui lòng nhập số điện thoại');
@@ -144,7 +148,7 @@ const getShipCode = async (interaction: any) => {
         pagination.render();
 
     } catch (err) {
-        await interaction.reply(`Bot lỗi rồi @lilhuy vào sửa đi :< ${err?.message}`);
+        await interaction.editReply(`Bot lỗi rồi @lilhuy vào sửa đi :< ${err?.message}`);
     }
 }
 module.exports = {

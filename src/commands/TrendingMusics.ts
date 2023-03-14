@@ -7,6 +7,7 @@ const fetch = (url: RequestInfo, init?: RequestInit) =>
 
 const getTrendingMvs = async (interaction: any) => {
     try {
+        interaction.deferReply();
         const url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=VN&videoCategoryId=10&key=" + process.env.YOUTUBE_API_KEY;
         const response = await fetch(url);
         if(!response.ok) {
@@ -35,10 +36,10 @@ const getTrendingMvs = async (interaction: any) => {
             },
 
         };
-        await interaction.reply({ embeds: [responseEmbeded] });
+        await interaction.editReply({ embeds: [responseEmbeded] });
     } catch (e) {
         console.log(e);
-        await interaction.reply("Có lỗi xảy ra: ", e.message);
+        await interaction.editReply("Có lỗi xảy ra: ", e.message);
     }
 }
 module.exports = {
