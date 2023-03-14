@@ -4,6 +4,8 @@ import { RequestInfo, RequestInit } from 'node-fetch';
 import { getWebsiteContent } from '../util';
 import { JSDOM } from 'jsdom';
 const queryString = require('node:querystring');
+const { Pagination } = require('pagination.djs');
+
 
 const fetch = (url: RequestInfo, init?: RequestInit) =>
     import('node-fetch').then(({ default: fetch }) => fetch(url, init));
@@ -14,6 +16,8 @@ function isVietnamesePhoneNumber(number) {
 }
 
 const getTrackingStatus = async (shipCode: string) => {
+
+
     const searchString = queryString.stringify({
         type: 'track',
         billcode: shipCode
@@ -43,7 +47,13 @@ const getTrackingStatus = async (shipCode: string) => {
             const trackingItemContent = resultVandonItems[i].querySelectorAll('div')[3].textContent.trim()
             res += `⏰ **${trackingItemDate} ${trackingItemTime}:** 🚒 ${trackingItemContent}\n`
         }
+        if (res.length === 0) {
+            res = `Không lấy được trạng thái đơn hàng từ J&T :<
+             Có thể do đơn mới tạo nên JT chưa cập nhập dữ liệu
+             Tra cứu trực tiếp tại đây: https://jtexpress.vn/vi/tracking?type=track&billcode=${shipCode}`
+        }
         return res;
+
 
     } catch (e) {
         console.log(e);
@@ -98,41 +108,43 @@ const getShipCode = async (interaction: any) => {
             const trackingStatus = await getTrackingStatus(order.shipCode);
             description += `**${i + 1}. MVD: ${order.shipCode}** | Tên người nhận: ${order.customerName} | Hàng: ${order.product}`
             description += `\n`.concat(trackingStatus);
-            return {
-                color: 0x0099ff,
-                title: 'Danh sách mvd của ' + listOrders[0].customerName,
-                author: {
-                    name: '65% bot',
-                    icon_url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg',
-                },
+            return new EmbedBuilder()
+                .setTitle('Danh sách mvd của ' + listOrders[0].customerName)
+                .setColor(0x0099ff)
+                .setDescription(description)
 
-                description,
-                footer: {
-                    text: 'Bot created by lilhuy',
-                    icon_url: 'https://res.cloudinary.com/dfpf4gsti/image/upload/v1677298052/me_h2dzlt.jpg',
-                },
-            };
+            // return {
+            //     color: 0x0099ff,
+            //     title: 'Danh sách mvd của ' + listOrders[0].customerName,
+            //     author: {
+            //         name: '65% bot',
+            //         icon_url: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg',
+            //     },
+
+            //     description
+            // };
         }));
-        let currentEmbedIndex = 0;
+        if (!listEmbeds.length) {
+            await interaction.reply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
+            return;
+        }
+        const pagination = new Pagination(interaction);
+        pagination.setEmbeds(listEmbeds);
 
-        //handle button click
-        const filter = (i: any) => i.customId === 'next_embed' || i.customId === 'previous_embed';
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 5 * 60 * 1000 });
-        collector.on('collect', async (i: any) => {
-            if (i.customId === 'next_embed') {
-                currentEmbedIndex++;
-            } else if (i.customId === 'previous_embed') {
-                currentEmbedIndex--;
+        pagination.setEmbeds(listEmbeds, (embed: EmbedBuilder) => {
+            return embed.setFooter({
+                text: 'Bot created by lilhuy',
+                iconURL: 'https://res.cloudinary.com/dfpf4gsti/image/upload/v1677298052/me_h2dzlt.jpg',
             }
-            await i.update({ embeds: [listEmbeds[currentEmbedIndex]], components: [getPaginateButton(currentEmbedIndex, listEmbeds.length)] });
-
+            ).setAuthor({
+                name: '65% bot',
+                iconURL: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg',
+            });
         });
-
-        await interaction.reply({ embeds: [listEmbeds[0]], components: [getPaginateButton(currentEmbedIndex, listEmbeds.length)] });
-
+        pagination.render();
 
     } catch (err) {
-        await interaction.reply(`Lỗi: ${err.message}`);
+        await interaction.reply(`Bot lỗi rồi @lilhuy vào sửa đi :< ${err?.message}`);
     }
 }
 module.exports = {

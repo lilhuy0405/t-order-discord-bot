@@ -28,6 +28,7 @@
     "moment": "^2.29.4",
     "node-fetch": "^2.6.6",
     "os-utils": "^0.0.14",
+    "pagination.djs": "^4.0.9",
     "query-string": "^8.1.0"
   }
 }
