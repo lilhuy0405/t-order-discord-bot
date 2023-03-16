@@ -8,9 +8,10 @@ module.exports = {
         .setName('vnexpress')
         .setDescription('Tin tức mới nhất từ vnexpress.net'),
     async execute(interaction: any) {
+        await interaction.deferReply();
         const news = await crawler.getLatestNews();
         if (!news) {
-            await interaction.reply('Đã xảy ra lỗi khi lấy tin tức');
+            await interaction.editReply('Đã xảy ra lỗi khi lấy tin tức');
             return;
         }
 
@@ -34,6 +35,6 @@ module.exports = {
             },
 
         };
-        await interaction.reply({ embeds: [responseEmbeded] });
+        await interaction.editReply({ embeds: [responseEmbeded] });
     },
 };

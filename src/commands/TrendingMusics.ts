@@ -1,16 +1,16 @@
 import { SlashCommandBuilder } from 'discord.js';
 import "dotenv/config";
 import moment = require('moment');
-import {RequestInfo, RequestInit} from 'node-fetch';
+import { RequestInfo, RequestInit } from 'node-fetch';
 const fetch = (url: RequestInfo, init?: RequestInit) =>
-  import('node-fetch').then(({default: fetch}) => fetch(url, init));
+    import('node-fetch').then(({ default: fetch }) => fetch(url, init));
 
 const getTrendingMvs = async (interaction: any) => {
     try {
-        interaction.deferReply();
+        await interaction.deferReply();
         const url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=VN&videoCategoryId=10&key=" + process.env.YOUTUBE_API_KEY;
         const response = await fetch(url);
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
