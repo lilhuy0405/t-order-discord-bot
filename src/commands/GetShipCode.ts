@@ -103,7 +103,7 @@ const getShipCode = async (interaction: any) => {
         const data = await resp.json();
         const listOrders = data.data;
         if (!listOrders.length) {
-            await interaction.reply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
+            await interaction.editReply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
             return;
         }
         //from list orders build list embeds
@@ -129,7 +129,7 @@ const getShipCode = async (interaction: any) => {
             // };
         }));
         if (!listEmbeds.length) {
-            await interaction.reply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
+            await interaction.editReply('Không tìm thấy mvd nào. Mua gì đi rồi mình nói chuyện tiếp');
             return;
         }
         const pagination = new Pagination(interaction);
@@ -148,7 +148,7 @@ const getShipCode = async (interaction: any) => {
         pagination.render();
 
     } catch (err) {
-        await interaction.editReply(`Bot lỗi rồi @lilhuy vào sửa đi :< ${err?.message}`);
+        await interaction.editReply(`Bot lỗi rồi <@675329369987612682> vào sửa đi :<\nError: ${err?.message}`);
     }
 }
 module.exports = {
