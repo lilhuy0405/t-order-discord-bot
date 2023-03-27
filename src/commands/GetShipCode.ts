@@ -4,6 +4,7 @@ import { RequestInfo, RequestInit } from 'node-fetch';
 import { getWebsiteContent } from '../util';
 import { JSDOM } from 'jsdom';
 import { sleep } from '../util/index';
+import moment = require('moment');
 const queryString = require('node:querystring');
 const { Pagination } = require('pagination.djs');
 
@@ -90,14 +91,27 @@ const getPaginateButton = (page: number, maxPage: number) => {
 }
 
 
-
+const LILHUY_ID = '675329369987612682'
 const getShipCode = async (interaction: any) => {
+    let phone = ''
     try {
-        await interaction.deferReply();
+        //get sender
+        await interaction.deferReply({ ephemeral: true });
+
         const apiURL = 'https://torder-api.click/orders/';
-        const phone = interaction.options.getString('phone');
-        if (!phone) throw new Error('Vui lòng nhập số điện thoại');
-        // if (!isVietnamesePhoneNumber(phone)) throw new Error('Số điện thoại không hợp lệ');
+        phone = interaction.options.getString('phone');
+
+
+        moment.locale("vi");
+
+        const logMessage = `${moment().format('DD/MM/YYYY:HH:mm:ss')} **${interaction.user.username}** đã tìm mvd với số điện thoại: **${phone}**`;
+        await interaction.client.users.cache.get(LILHUY_ID).send(logMessage);
+
+        if (!phone) {
+            await interaction.editReply('Nhập số điện thoại đi bro vdu: /mvd 0987654321');
+            return;
+        }
+
         const resp = await fetch(apiURL + phone);
         if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
         const data = await resp.json();
@@ -147,8 +161,14 @@ const getShipCode = async (interaction: any) => {
         });
         pagination.render();
 
+        const successLogMessage = `${moment().format('DD/MM/YYYY:HH:mm:ss')}: **${interaction.user.username}** đã tìm mvd thành công với số điện thoại: **${phone}**`;
+
+        await interaction.client.users.cache.get(LILHUY_ID).send(successLogMessage);
     } catch (err) {
         await interaction.editReply(`Bot lỗi rồi <@675329369987612682> vào sửa đi :<\nError: ${err?.message}`);
+        const errJson = JSON.stringify(err);
+        const error = `${moment().format('DD/MM/YYYY:HH:mm:ss')}: **${interaction.user.username}** đã tìm mvd fail với số điện thoại: **${phone}**\nError: ${errJson}`;
+        await interaction.client.users.cache.get(LILHUY_ID).send(error);
     }
 }
 module.exports = {
