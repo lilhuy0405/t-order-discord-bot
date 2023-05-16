@@ -29,6 +29,7 @@
     "node-fetch": "^2.6.6",
     "os-utils": "^0.0.14",
     "pagination.djs": "^4.0.9",
+    "puppeteer": "^20.2.1",
     "query-string": "^8.1.0"
   }
 }
