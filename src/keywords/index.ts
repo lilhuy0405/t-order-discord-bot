@@ -5,7 +5,7 @@ export const keywords = [
   },
   {
     matches: ['kha', 'kha lé'],
-    reply: 'Kha lé xem segg, kha lé phờ ri nút'
+    reply: 'Kha lé xem segg bị cả server biết, kha lé phờ ri nút'
   },
   {
     matches: ['65%'],
