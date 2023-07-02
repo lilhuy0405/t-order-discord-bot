@@ -1,12 +1,19 @@
 import 'dotenv/config'
-import { Collection, Client as DiscordClient, Events, GatewayIntentBits } from 'discord.js'
+import {Collection, Client as DiscordClient, Events, GatewayIntentBits} from 'discord.js'
 import path = require('node:path');
 import fs = require('node:fs');
+import {keywords} from "./keywords";
 
 async function main() {
   //these line belows should be in a .env file
 
-  const client = new DiscordClient({ intents: [GatewayIntentBits.Guilds] }) as any;
+  const client = new DiscordClient({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ]
+  }) as any;
 
   //these line above should be in a .env file
 
@@ -45,12 +52,24 @@ async function main() {
       await command.execute(interaction);
     } catch (error) {
       console.error(error);
-      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+      await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+    }
+  });
+  //keyword bots
+  client.on(Events.MessageCreate, async (message: any) => {
+    const isBot = message.author.bot;
+    if (isBot) return;
+    const messageContent = message.content.toLowerCase();
+    const reply = keywords.find(keyword => {
+      return keyword.matches.some(match => messageContent.includes(match));
+    });
+    if (reply) {
+      await message.reply(reply.reply);
     }
   });
 
   // Log in to Discord with your client's token
-  client.login(process.env.TOKEN);
+  await client.login(process.env.TOKEN);
 
 }
 
