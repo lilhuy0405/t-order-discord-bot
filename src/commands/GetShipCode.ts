@@ -123,9 +123,9 @@ const getShipCode = async (interaction: any) => {
         //from list orders build list embeds
         const listEmbeds = await Promise.all(listOrders.map(async (order: any, i: number) => {
             let description = '';
-            const trackingStatus = await getTrackingStatus(order.shipCode);
+            // const trackingStatus = await getTrackingStatus(order.shipCode);
             description += `**${i + 1}. MVD: ${order.shipCode}** | Tên người nhận: ${order.customerName} | Hàng: ${order.product}`
-            description += `\n`.concat(trackingStatus);
+            description += `\n Tra cứu trạng thái đơn hàng trực tiếp tại: ${order?.shippingUnit?.trackingWebsite} hoặc tải ứng dụng ${order?.shippingUnit?.appName}`
             return new EmbedBuilder()
                 .setTitle('Danh sách mvd của ' + listOrders[0].customerName)
                 .setColor(0x0099ff)
