@@ -159,7 +159,7 @@ const getShipCode = async (interaction: any) => {
                 iconURL: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg',
             });
         });
-        pagination.render();
+        await pagination.render();
 
         const successLogMessage = `${moment().format('DD/MM/YYYY:HH:mm:ss')}: **${interaction.user.username}** đã tìm mvd thành công với số điện thoại: **${phone}**`;
 
