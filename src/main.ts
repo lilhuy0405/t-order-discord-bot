@@ -56,17 +56,17 @@ async function main() {
     }
   });
   //keyword bots
-  client.on(Events.MessageCreate, async (message: any) => {
-    const isBot = message.author.bot;
-    if (isBot) return;
-    const messageContent = message.content.toLowerCase();
-    const reply = keywords.find(keyword => {
-      return keyword.matches.some(match => messageContent.includes(match));
-    });
-    if (reply) {
-      await message.reply(reply.reply);
-    }
-  });
+  // client.on(Events.MessageCreate, async (message: any) => {
+  //   const isBot = message.author.bot;
+  //   if (isBot) return;
+  //   const messageContent = message.content.toLowerCase();
+  //   const reply = keywords.find(keyword => {
+  //     return keyword.matches.some(match => messageContent.includes(match));
+  //   });
+  //   if (reply) {
+  //     await message.reply(reply.reply);
+  //   }
+  // });
 
   // Log in to Discord with your client's token
   await client.login(process.env.TOKEN);
