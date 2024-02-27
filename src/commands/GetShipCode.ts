@@ -98,7 +98,7 @@ const getShipCode = async (interaction: any) => {
         //get sender
         await interaction.deferReply({ ephemeral: true });
 
-        const apiURL = 'https://torder-api.click/api/v1/orders/';
+        const apiURL = 'https://lilhuytorder.vinhomes.co.uk/';
         phone = interaction.options.getString('phone');
 
 
